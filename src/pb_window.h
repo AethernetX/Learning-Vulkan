@@ -6,13 +6,13 @@
 #include <string>
 
 namespace pb{
-    class pbWindow {
+    class PbWindow {
         public:
-        pbWindow(int w, int h, std::string name);
-        ~pbWindow();
+        PbWindow(int w, int h, std::string name);
+        ~PbWindow();
 
-        pbWindow(const pbWindow &) = delete;
-        pbWindow &operator=(const pbWindow &) = delete; 
+        PbWindow(const PbWindow &) = delete;
+        PbWindow &operator=(const PbWindow &) = delete; 
         
         bool shouldClose(){ return glfwWindowShouldClose(window); };
 

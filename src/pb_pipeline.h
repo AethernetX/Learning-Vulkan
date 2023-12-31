@@ -4,9 +4,9 @@
 #include <vector>
 
 namespace pb{
-    class pbPipeline {
+    class PbPipeline {
         public:
-        pbPipeline(const std::string& vertFilePath, const std::string& fragFilePath);
+        PbPipeline(const std::string& vertFilePath, const std::string& fragFilePath);
 
         private:
         static std::vector<char> readFile(const std::string& filepath);

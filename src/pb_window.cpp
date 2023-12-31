@@ -2,15 +2,15 @@
 
 namespace pb{
 
-    pbWindow::pbWindow(int w, int h, std::string name) : width{w}, height{h}, windowName{name}{
+    PbWindow::PbWindow(int w, int h, std::string name) : width{w}, height{h}, windowName{name}{
         initWindow();        
     }
 
-    pbWindow::~pbWindow(){
+    PbWindow::~PbWindow(){
 
     }
 
-    void pbWindow::initWindow(){
+    void PbWindow::initWindow(){
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);

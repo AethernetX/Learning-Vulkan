@@ -8,11 +8,11 @@
 namespace pb
 {
 
-    pbPipeline::pbPipeline(const std::string& vertFilePath, const std::string& fragFilePath){
+    PbPipeline::PbPipeline(const std::string& vertFilePath, const std::string& fragFilePath){
         createGraphicsPipeline(vertFilePath, fragFilePath);
     }
 
-    std::vector<char> pbPipeline::readFile(const std::string& filepath){
+    std::vector<char> PbPipeline::readFile(const std::string& filepath){
         std::ifstream file(filepath, std::ios::ate | std::ios::binary);
 
         if(!file.is_open()){
@@ -30,7 +30,7 @@ namespace pb
         return buffer;
     } 
 
-    void pbPipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& fragFilePath){
+    void PbPipeline::createGraphicsPipeline(const std::string& vertFilePath, const std::string& fragFilePath){
         auto vertCode = readFile(vertFilePath);
         auto fragCode = readFile(fragFilePath);
 

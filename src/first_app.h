@@ -12,8 +12,8 @@ namespace pb{
         void run();
 
         private:
-        pbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
-        pbPipeline pipeline{"../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv"};
+        PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
+        PbPipeline pipeline{"../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv"};
 
     };
 }
