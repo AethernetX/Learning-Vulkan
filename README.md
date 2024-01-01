@@ -24,3 +24,5 @@ set(MINGW_PATH "[path to the binaries for mingw32-make and g++]")
 
 2. open up the folder in vscode and do `ctrl + shift + b`
 3. in theory you should have a window
+
+hopefully I will be able to learn something!! this is being inspired by the tutorial made by Brendan Galea, the playlist can be found here -> https://www.youtube.com/playlist?list=PL8327DO66nu9qYVKLDmdLW_84-yE4auCR
