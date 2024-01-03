@@ -2,3 +2,4 @@ build
 .env.cmake
 settings.json
 c_cpp_properties.json
+launch.json

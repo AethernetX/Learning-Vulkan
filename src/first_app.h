@@ -2,6 +2,7 @@
 
 #include "pb_pipeline.h"
 #include "pb_window.h"
+#include "pb_device.h"
 
 namespace pb{
     class FirstApp{
@@ -13,7 +14,8 @@ namespace pb{
 
         private:
         PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
-        PbPipeline pipeline{"../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv"};
+        PbDevice pbDevice{pbWindow};
+        PbPipeline pbPipeline{pbDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", PbPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
 
     };
 }
