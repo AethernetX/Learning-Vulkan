@@ -6,6 +6,7 @@
 namespace pb{
 
     FirstApp::FirstApp(){
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -22,6 +23,19 @@ namespace pb{
         }
 
         vkDeviceWaitIdle(pbDevice.device());
+    }
+
+    void FirstApp::loadModels(){
+        std::vector<PbModel::Vertex> vertices {
+            {{-0.5f, -0.5f}},
+            {{-0.5f, 0.5f}},
+            {{0.5f, -0.5f}},
+            {{0.5f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+
+        pbModel = std::make_unique<PbModel>(pbDevice, vertices);
     }
 
     void FirstApp::createPipelineLayout(){
@@ -85,7 +99,9 @@ namespace pb{
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         
             pbPipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            pbModel->bind(commandBuffers[i]);
+            pbModel->draw(commandBuffers[i]);
+
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if(vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS){

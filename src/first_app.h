@@ -4,6 +4,7 @@
 #include "pb_pipeline.h"
 #include "pb_swap_chain.h"
 #include "pb_window.h"
+#include "pb_model.h"
 
 #include <memory>
 #include <vector>
@@ -23,6 +24,7 @@ namespace pb{
         void run();
 
         private:
+        void loadModels();
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -34,5 +36,6 @@ namespace pb{
         std::unique_ptr<PbPipeline> pbPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<PbModel> pbModel;
     };
 }
