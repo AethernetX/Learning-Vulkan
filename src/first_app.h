@@ -29,10 +29,12 @@ namespace pb{
         void createPipeline();
         void createCommandBuffers();
         void drawFrame();
+        void recreateSwapChain();
+        void recordCommandBuffer(int imageIndex);
 
         PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
         PbDevice pbDevice{pbWindow};
-        PbSwapChain pbSwapChain{pbDevice, pbWindow.getExtent()};
+        std::unique_ptr<PbSwapChain> pbSwapChain;
         std::unique_ptr<PbPipeline> pbPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
