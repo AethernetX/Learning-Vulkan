@@ -30,7 +30,7 @@ namespace pb{
         ~PbPipeline();
 
         PbPipeline(const PbPipeline&) = delete;
-        void operator=(const PbPipeline&) = delete;
+        PbPipeline& operator=(const PbPipeline&) = delete;
 
         void bind(VkCommandBuffer commandBuffer);
 

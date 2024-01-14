@@ -19,7 +19,7 @@ class PbSwapChain {
   ~PbSwapChain();
 
   PbSwapChain(const PbSwapChain &) = delete;
-  void operator=(const PbSwapChain &) = delete;
+  PbSwapChain &operator=(const PbSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }
