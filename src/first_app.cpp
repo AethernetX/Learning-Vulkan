@@ -58,19 +58,31 @@ namespace pb{
         }
 
         vkDeviceWaitIdle(pbDevice.device());
-        pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent);
+
+        if(pbSwapChain == nullptr){
+            pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent);
+        } else {
+            pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent, std::move(pbSwapChain));
+            if(pbSwapChain->imageCount() != commandBuffers.size()){
+                freeCommandBuffers();
+                createCommandBuffers();
+            }
+        }
+
+        // Optimisation: if render pass is compatible do nothing else
         createPipeline();
     }
 
     void FirstApp::createPipeline(){
-        auto PipelineConfig = PbPipeline::defaultPipelineConfigInfo(pbSwapChain->width(), pbSwapChain->height());
-        PipelineConfig.renderPass = pbSwapChain->getRenderPass();
-        PipelineConfig.pipelineLayout = pipelineLayout;
+        PipelineConfigInfo pipelineConfig{};
+        PbPipeline::defaultPipelineConfigInfo(pipelineConfig);
+        pipelineConfig.renderPass = pbSwapChain->getRenderPass();
+        pipelineConfig.pipelineLayout = pipelineLayout;
         pbPipeline = std::make_unique<PbPipeline>(
             pbDevice,
             "../shaders/simple_shader.vert.spv",
             "../shaders/simple_shader.frag.spv",
-            PipelineConfig);
+            pipelineConfig);
     }
 
     void FirstApp::createCommandBuffers(){
@@ -85,6 +97,16 @@ namespace pb{
         if(vkAllocateCommandBuffers(pbDevice.device(), &allocateInfo, commandBuffers.data()) != VK_SUCCESS){
             throw std::runtime_error("failed to allocate command buffers!");
         }
+    }
+
+    void FirstApp::freeCommandBuffers(){
+        vkFreeCommandBuffers(
+            pbDevice.device(),
+            pbDevice.getCommandPool(),
+            static_cast<uint32_t>(commandBuffers.size()),
+            commandBuffers.data()
+        );
+        commandBuffers.clear();
     }
 
     void FirstApp::recordCommandBuffer(int imageIndex){
@@ -111,6 +133,17 @@ namespace pb{
 
         vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(pbSwapChain->getSwapChainExtent().width);
+        viewport.height = static_cast<float>(pbSwapChain->getSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor{{0, 0}, pbSwapChain->getSwapChainExtent()};
+        vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+
         pbPipeline->bind(commandBuffers[imageIndex]);
         pbModel->bind(commandBuffers[imageIndex]);
         pbModel->draw(commandBuffers[imageIndex]);
