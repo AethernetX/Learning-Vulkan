@@ -5,6 +5,7 @@
 #include "pb_swap_chain.h"
 #include "pb_window.h"
 #include "pb_model.h"
+#include "pb_game_object.h"
 
 #include <memory>
 #include <vector>
@@ -24,7 +25,7 @@ namespace pb{
         void run();
 
         private:
-        void loadModels();
+        void loadGameObjects();
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -32,6 +33,7 @@ namespace pb{
         void drawFrame();
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);
+        void renderGameObjects(VkCommandBuffer commandBuffer);
 
         PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
         PbDevice pbDevice{pbWindow};
@@ -39,6 +41,6 @@ namespace pb{
         std::unique_ptr<PbPipeline> pbPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<PbModel> pbModel;
+        std::vector<PbGameObject> gameObjects;
     };
 }
