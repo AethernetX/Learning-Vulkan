@@ -2,10 +2,9 @@
 
 #include "pb_device.h"
 #include "pb_pipeline.h"
-#include "pb_swap_chain.h"
 #include "pb_window.h"
-#include "pb_model.h"
 #include "pb_game_object.h"
+#include "pb_renderer.h"
 
 #include <memory>
 #include <vector>
@@ -28,19 +27,14 @@ namespace pb{
         void loadGameObjects();
         void createPipelineLayout();
         void createPipeline();
-        void createCommandBuffers();
-        void freeCommandBuffers();
-        void drawFrame();
-        void recreateSwapChain();
-        void recordCommandBuffer(int imageIndex);
         void renderGameObjects(VkCommandBuffer commandBuffer);
 
         PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
         PbDevice pbDevice{pbWindow};
-        std::unique_ptr<PbSwapChain> pbSwapChain;
+        PbRenderer pbRenderer{pbWindow, pbDevice};
+
         std::unique_ptr<PbPipeline> pbPipeline;
         VkPipelineLayout pipelineLayout;
-        std::vector<VkCommandBuffer> commandBuffers;
         std::vector<PbGameObject> gameObjects;
     };
 }
