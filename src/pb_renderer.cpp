@@ -25,10 +25,11 @@ namespace pb{
         if(pbSwapChain == nullptr){
             pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent);
         } else {
-            pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent, std::move(pbSwapChain));
-            if(pbSwapChain->imageCount() != commandBuffers.size()){
-                freeCommandBuffers();
-                createCommandBuffers();
+            std::shared_ptr<PbSwapChain> oldSwapChain = std::move(pbSwapChain);
+            pbSwapChain = std::make_unique<PbSwapChain>(pbDevice, extent, oldSwapChain);
+
+            if(!oldSwapChain->compareSwapFormat(*pbSwapChain.get())){
+                throw std::runtime_error("Swap chain image (or depth) format has changed!");
             }
         }
 
@@ -36,7 +37,7 @@ namespace pb{
     }
 
     void PbRenderer::createCommandBuffers(){
-        commandBuffers.resize(pbSwapChain->imageCount());
+        commandBuffers.resize(PbSwapChain::MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo allocateInfo{};
         allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -102,6 +103,7 @@ namespace pb{
         }
 
         isFrameStarted = false;
+        currentFrameIndex = (currentFrameIndex + 1) % PbSwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
     void PbRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer){
