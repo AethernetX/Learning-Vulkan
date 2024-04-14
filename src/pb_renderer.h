@@ -19,6 +19,7 @@ namespace pb{
         PbRenderer &operator=(const PbRenderer &) = delete;
         
         VkRenderPass getSwapChainRenderPass() const {return pbSwapChain->getRenderPass();}
+        float getAspectRatio() const { return pbSwapChain->extentAspectRatio(); }
         bool isFrameInProgress() const { return isFrameStarted;};
 
         VkCommandBuffer getCurrentCommandBuffer() const {

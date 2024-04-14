@@ -1,4 +1,6 @@
 #include "first_app.h"
+
+#include "pb_camera.h"
 #include "simple_render_system.h"
 
 #define GLM_FORCE_RADIANS
@@ -20,10 +22,12 @@ namespace pb{
 
     void FirstApp::run(){
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
-
+        PbCamera camera{};
         while(!pbWindow.shouldClose()){
             glfwPollEvents();           
-
+            float aspect = pbRenderer.getAspectRatio();
+            //camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+            camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
             if(auto commandBuffer = pbRenderer.beginFrame()){
 
                 //begin offscreen shadow pass
@@ -31,7 +35,7 @@ namespace pb{
                 //end offscreen shadow pass
 
                 pbRenderer.beginSwapChainRenderPass(commandBuffer);
-                SimpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+                SimpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 pbRenderer.endSwapChainRenderPass(commandBuffer);
                 pbRenderer.endFrame();
             }
@@ -106,7 +110,7 @@ namespace pb{
 
         auto cube = PbGameObject::createGameObject();
         cube.model = pbModel;
-        cube.transform.translation = {.0f, .0f, .5f};
+        cube.transform.translation = {.0f, .0f, 1.5f};
         cube.transform.scale = {.5f, .5f, .5f};
         gameObjects.push_back(std::move(cube));
     }
