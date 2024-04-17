@@ -23,6 +23,8 @@ namespace pb{
     void FirstApp::run(){
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
         PbCamera camera{};
+        camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
+
         while(!pbWindow.shouldClose()){
             glfwPollEvents();           
             float aspect = pbRenderer.getAspectRatio();
