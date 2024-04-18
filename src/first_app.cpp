@@ -1,5 +1,6 @@
 #include "first_app.h"
 
+#include "keyboard_movement_controller.hpp"
 #include "pb_camera.h"
 #include "simple_render_system.h"
 
@@ -9,6 +10,7 @@
 #include <glm/gtc/constants.hpp>
 
 #include <array>
+#include <chrono>
 #include <cassert>
 #include <stdexcept>
 
@@ -24,11 +26,27 @@ namespace pb{
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
         PbCamera camera{};
         camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
+        
+        auto viewObject = PbGameObject::createGameObject();
+        KeyboardMovementController cameraController{};
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
 
         while(!pbWindow.shouldClose()){
-            glfwPollEvents();           
+            glfwPollEvents();
+
+            auto newTime = std::chrono::high_resolution_clock::now();
+            float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            currentTime = newTime;
+
+            //NB: if you move whilst resizing the window, with the current implementation, the camera will jump somewhere far
+            // this can be fixed by adding a max frame time variable. Only implement if necessary
+            // let max frame tim be some predefined const value
+            // frameTime = glm::min(frameTime, MAX_FRAME_TIME);
+
+            cameraController.moveInPlaneXZY(pbWindow.getGLFWwindow(), frameTime, viewObject);
+            camera.setViewYXZ(viewObject.transform.translation, viewObject.transform.rotation);
             float aspect = pbRenderer.getAspectRatio();
-            //camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
             if(auto commandBuffer = pbRenderer.beginFrame()){
 
