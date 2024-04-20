@@ -20,7 +20,13 @@ namespace pb{
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();            
         };
 
-        PbModel(PbDevice &device, const std::vector<Vertex> &vertices);
+        struct Builder {
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+
+        };
+
+        PbModel(PbDevice &device, const PbModel::Builder &builder);
         ~PbModel();
 
         PbModel(const PbModel &) = delete;
@@ -31,10 +37,17 @@ namespace pb{
 
         private:
         void createVertexBuffers(const std::vector<Vertex> &vertices);
+        void createIndexBuffers(const std::vector<uint32_t> &indices);
 
         PbDevice &pbDevice;
+
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
+
+        bool hasIndexBuffer = false;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t indexCount;
     };
 }
