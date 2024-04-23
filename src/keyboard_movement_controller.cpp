@@ -4,7 +4,41 @@
 
 namespace pb{
     void KeyboardMovementController::moveInPlaneXZY(GLFWwindow* window, float dt, PbGameObject& gameObject){
+                
         glm::vec3 rotate{0};
+
+        //really illegal but I'm going to do mouse movement code here
+        //TODO: we need to find a way to pass the current window width to here
+
+        //this might be a bad idea cause it get's the window width every game tick
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        if(glfwGetKey(window, keys.enableOrbit) == GLFW_PRESS){
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            //orbit logic
+            if(firstClick){
+                glfwSetCursorPos(window, width/2, height/2);
+                firstClick = false;
+            }
+
+            double mouseX;
+		    double mouseY;
+		    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+            float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
+		    float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
+
+            rotate.x -= rotX;
+            rotate.y += rotY;
+
+            glfwSetCursorPos(window, width/2, height/2);
+
+        } else if (glfwGetKey(window, keys.enableOrbit) == GLFW_RELEASE){
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		    firstClick = true;
+        }
+
         if(glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.f;
         if(glfwGetKey(window, keys.lookLeft) == GLFW_PRESS) rotate.y -= 1.f;
         if(glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x += 1.f;

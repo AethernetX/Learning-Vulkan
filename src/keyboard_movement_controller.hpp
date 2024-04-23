@@ -17,7 +17,12 @@ namespace pb{
             int lookRight = GLFW_KEY_RIGHT;
             int lookUp = GLFW_KEY_UP;
             int lookDown = GLFW_KEY_DOWN;
+            int enableOrbit = GLFW_KEY_LEFT_CONTROL;
         };
+
+        //mouse look code
+        bool firstClick = false;
+        float sensitivity = 100.0f;
 
         void moveInPlaneXZY(GLFWwindow* window, float dt, PbGameObject& gameObject);
 
