@@ -51,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
  ${Vulkan_INCLUDE_DIRS}
  ${GLFW_INCLUDE_DIRS}
  ${GLM_PATH}
+ ${TINY_OBJ_LOADER}
 )
 
 target_link_directories(${PROJECT_NAME} PUBLIC
