@@ -72,7 +72,7 @@ namespace pb{
         auto gameObj = PbGameObject::createGameObject();
         gameObj.model = pbModel;
         gameObj.transform.translation = {.0f, .0f, 1.5f};
-        gameObj.transform.scale = {.5f, .5f, .5f};
+        gameObj.transform.scale = {1.f, 1.f, 1.f};
         gameObjects.push_back(std::move(gameObj));
     }
 }
