@@ -1,6 +1,7 @@
 #include "first_app.h"
 
 #include "keyboard_movement_controller.hpp"
+#include "pb_buffer.h"
 #include "pb_camera.h"
 #include "simple_render_system.h"
 
@@ -16,6 +17,11 @@
 
 namespace pb{
 
+    struct GlobalUbo {
+        glm::mat4 projectionView{1.f};
+        glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+    };
+
     FirstApp::FirstApp(){
         loadGameObjects();
     }
@@ -23,6 +29,16 @@ namespace pb{
     FirstApp::~FirstApp(){}
 
     void FirstApp::run(){
+        PbBuffer globalUboBuffer{
+            pbDevice,
+            sizeof(GlobalUbo),
+            PbSwapChain::MAX_FRAMES_IN_FLIGHT,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            pbDevice.properties.limits.minUniformBufferOffsetAlignment
+        };
+        globalUboBuffer.map();
+
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
         PbCamera camera{};
         camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
@@ -49,13 +65,28 @@ namespace pb{
             float aspect = pbRenderer.getAspectRatio();
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
             if(auto commandBuffer = pbRenderer.beginFrame()){
+                int frameIndex = pbRenderer.getFrameIndex();
+                FrameInfo frameInfo{
+                    frameIndex,
+                    frameTime,
+                    commandBuffer,
+                    camera
+                };
+
+                // update
+                GlobalUbo ubo{};
+      
+                ubo.projectionView = camera.getProjection() * camera.getView();
+                globalUboBuffer.writeToIndex(&ubo, frameIndex);
+                globalUboBuffer.flushIndex(frameIndex);
 
                 //begin offscreen shadow pass
                 //render shadow casting objects
                 //end offscreen shadow pass
 
+                // render
                 pbRenderer.beginSwapChainRenderPass(commandBuffer);
-                SimpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+                SimpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
                 pbRenderer.endSwapChainRenderPass(commandBuffer);
                 pbRenderer.endFrame();
             }

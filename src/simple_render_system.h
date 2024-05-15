@@ -2,6 +2,7 @@
 
 #include "pb_camera.h"
 #include "pb_device.h"
+#include "pb_frame_info.h"
 #include "pb_pipeline.h"
 #include "pb_game_object.h"
 
@@ -18,7 +19,7 @@ namespace pb{
         SimpleRenderSystem(const SimpleRenderSystem &) = delete;
         SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<PbGameObject> &gameObjects, const PbCamera& camera);
+        void renderGameObjects(FrameInfo &frameInfo, std::vector<PbGameObject> &gameObjects);
 
         private:
         void createPipelineLayout();

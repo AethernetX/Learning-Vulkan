@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pb_buffer.h"
 #include "pb_device.h"
 
 #define GLM_FORCE_RADIANS
@@ -51,13 +52,11 @@ namespace pb{
 
         PbDevice &pbDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<PbBuffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<PbBuffer> indexBuffer;
         uint32_t indexCount;
     };
 }
