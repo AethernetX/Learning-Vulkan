@@ -29,15 +29,19 @@ namespace pb{
     FirstApp::~FirstApp(){}
 
     void FirstApp::run(){
-        PbBuffer globalUboBuffer{
-            pbDevice,
-            sizeof(GlobalUbo),
-            PbSwapChain::MAX_FRAMES_IN_FLIGHT,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-            pbDevice.properties.limits.minUniformBufferOffsetAlignment
-        };
-        globalUboBuffer.map();
+
+        // just cause we set instance count to 1 doesn't mean we won't use it
+        std::vector<std::unique_ptr<PbBuffer>> uboBuffers(PbSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < uboBuffers.size(); i++){
+            uboBuffers[i] = std::make_unique<PbBuffer>(
+                pbDevice,
+                sizeof(GlobalUbo),
+                1,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+            uboBuffers[i]->map();
+        }
 
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
         PbCamera camera{};
@@ -74,11 +78,10 @@ namespace pb{
                 };
 
                 // update
-                GlobalUbo ubo{};
-      
+                GlobalUbo ubo{};      
                 ubo.projectionView = camera.getProjection() * camera.getView();
-                globalUboBuffer.writeToIndex(&ubo, frameIndex);
-                globalUboBuffer.flushIndex(frameIndex);
+                uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameIndex]->flush();
 
                 //begin offscreen shadow pass
                 //render shadow casting objects
