@@ -13,7 +13,7 @@ namespace pb{
     class SimpleRenderSystem{
         public:
 
-        SimpleRenderSystem(PbDevice &device, VkRenderPass renderPass);
+        SimpleRenderSystem(PbDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~SimpleRenderSystem();
 
         SimpleRenderSystem(const SimpleRenderSystem &) = delete;
@@ -22,7 +22,7 @@ namespace pb{
         void renderGameObjects(FrameInfo &frameInfo, std::vector<PbGameObject> &gameObjects);
 
         private:
-        void createPipelineLayout();
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
 
         PbDevice& pbDevice;

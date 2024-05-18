@@ -11,5 +11,6 @@ namespace pb {
         float frameTime;
         VkCommandBuffer commandBuffer;
         PbCamera &camera;
+        VkDescriptorSet globalDescriptorSet;
     };
 }

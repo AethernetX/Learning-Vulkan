@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pb_descriptors.h"
 #include "pb_device.h"
 #include "pb_window.h"
 #include "pb_game_object.h"
@@ -25,10 +26,12 @@ namespace pb{
         private:
         void loadGameObjects();
 
-        PbWindow pbWindow{WIDTH, HEIGHT, "Hello window"};
+        PbWindow pbWindow{WIDTH, HEIGHT, "Vulkan"};
         PbDevice pbDevice{pbWindow};
         PbRenderer pbRenderer{pbWindow, pbDevice};
 
+        //order of decleration matters
+        std::unique_ptr<PbDescriptorPool> globalPool{};
         std::vector<PbGameObject> gameObjects;
     };
-}
+} // namespace pb

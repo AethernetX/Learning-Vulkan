@@ -23,6 +23,12 @@ namespace pb{
     };
 
     FirstApp::FirstApp(){
+        globalPool = 
+            PbDescriptorPool::Builder(pbDevice)
+                .setMaxSets(PbSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, PbSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .build();
+
         loadGameObjects();
     }
 
@@ -43,7 +49,20 @@ namespace pb{
             uboBuffers[i]->map();
         }
 
-        SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass()};
+        auto globalSetLayout = PbDescriptorSetLayout::Builder(pbDevice)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+            .build();
+        
+        std::vector<VkDescriptorSet> globalDescriptorSets(PbSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for(int i = 0; i < globalDescriptorSets.size(); i++){
+            auto bufferInfo = uboBuffers[i]->descriptorInfo();
+            PbDescriptorWriter(*globalSetLayout, *globalPool)
+                .writeBuffer(0, &bufferInfo)
+                .build(globalDescriptorSets[i]);
+        }
+
+        SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+        
         PbCamera camera{};
         camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
         
@@ -74,7 +93,8 @@ namespace pb{
                     frameIndex,
                     frameTime,
                     commandBuffer,
-                    camera
+                    camera,
+                    globalDescriptorSets[frameIndex]
                 };
 
                 // update
