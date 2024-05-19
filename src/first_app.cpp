@@ -16,12 +16,20 @@
 #include <stdexcept>
 
 namespace pb{
-
+    //directional lighting
+    //struct GlobalUbo {
+        //glm::mat4 projectionView{1.f};
+        //glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+    //};
+    
+    //point lighting
     struct GlobalUbo {
         glm::mat4 projectionView{1.f};
-        glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+        glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; // w is intensity
+        glm::vec3 lightPosition{-1.f};
+        alignas(16) glm::vec4 lightColor{1.f}; //w is light intensity
     };
-
+    
     FirstApp::FirstApp(){
         globalPool = 
             PbDescriptorPool::Builder(pbDevice)
@@ -66,7 +74,9 @@ namespace pb{
         PbCamera camera{};
         camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
         
-        auto viewObject = PbGameObject::createGameObject();
+        auto viewerObject = PbGameObject::createGameObject();
+        viewerObject.transform.translation.z = -2.5f;
+
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -83,10 +93,10 @@ namespace pb{
             // let max frame tim be some predefined const value
             // frameTime = glm::min(frameTime, MAX_FRAME_TIME);
 
-            cameraController.moveInPlaneXZY(pbWindow.getGLFWwindow(), frameTime, viewObject);
-            camera.setViewYXZ(viewObject.transform.translation, viewObject.transform.rotation);
+            cameraController.moveInPlaneXZY(pbWindow.getGLFWwindow(), frameTime, viewerObject);
+            camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
             float aspect = pbRenderer.getAspectRatio();
-            camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+            camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
             if(auto commandBuffer = pbRenderer.beginFrame()){
                 int frameIndex = pbRenderer.getFrameIndex();
                 FrameInfo frameInfo{
@@ -122,11 +132,19 @@ namespace pb{
 
     void FirstApp::loadGameObjects(){
         std::shared_ptr<PbModel> pbModel = PbModel::createModelFromFile(pbDevice, "../models/teapot_smooth.obj"); 
-
+        std::shared_ptr<PbModel> floorModel = PbModel::createModelFromFile(pbDevice, "../models/quad.obj"); 
+        
         auto gameObj = PbGameObject::createGameObject();
         gameObj.model = pbModel;
-        gameObj.transform.translation = {.0f, .0f, 1.5f};
-        gameObj.transform.scale = {1.f, 1.f, 1.f};
+        gameObj.transform.translation = {.0f, 1.f, .0f};
+        gameObj.transform.scale = {.25f, .25f, .25f};
+        gameObj.transform.rotation = {3.14f, .0f, .0f};
         gameObjects.push_back(std::move(gameObj));
+
+        auto floor = PbGameObject::createGameObject();
+        floor.model = floorModel;
+        floor.transform.translation = {.0f, 1.f, .0f};
+        floor.transform.scale = {3.f, 3.f, 3.f};
+        gameObjects.push_back(std::move(floor));
     }
 }
