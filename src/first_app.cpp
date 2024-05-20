@@ -104,7 +104,8 @@ namespace pb{
                     frameTime,
                     commandBuffer,
                     camera,
-                    globalDescriptorSets[frameIndex]
+                    globalDescriptorSets[frameIndex],
+                    gameObjects
                 };
 
                 // update
@@ -119,7 +120,7 @@ namespace pb{
 
                 // render
                 pbRenderer.beginSwapChainRenderPass(commandBuffer);
-                SimpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+                SimpleRenderSystem.renderGameObjects(frameInfo);
                 pbRenderer.endSwapChainRenderPass(commandBuffer);
                 pbRenderer.endFrame();
             }
@@ -139,12 +140,12 @@ namespace pb{
         gameObj.transform.translation = {.0f, 1.f, .0f};
         gameObj.transform.scale = {.25f, .25f, .25f};
         gameObj.transform.rotation = {3.14f, .0f, .0f};
-        gameObjects.push_back(std::move(gameObj));
+        gameObjects.emplace(gameObj.getId(), std::move(gameObj));
 
         auto floor = PbGameObject::createGameObject();
         floor.model = floorModel;
         floor.transform.translation = {.0f, 1.f, .0f};
         floor.transform.scale = {3.f, 3.f, 3.f};
-        gameObjects.push_back(std::move(floor));
+        gameObjects.emplace(floor.getId(), std::move(floor));
     }
 }

@@ -32,6 +32,6 @@ namespace pb{
 
         //order of decleration matters
         std::unique_ptr<PbDescriptorPool> globalPool{};
-        std::vector<PbGameObject> gameObjects;
+        PbGameObject::Map gameObjects;
     };
 } // namespace pb
