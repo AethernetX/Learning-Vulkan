@@ -4,6 +4,7 @@
 #include "pb_buffer.h"
 #include "pb_camera.h"
 #include "simple_render_system.h"
+#include "point_light_system.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -16,15 +17,10 @@
 #include <stdexcept>
 
 namespace pb{
-    //directional lighting
-    //struct GlobalUbo {
-        //glm::mat4 projectionView{1.f};
-        //glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
-    //};
-    
-    //point lighting
+
     struct GlobalUbo {
-        glm::mat4 projectionView{1.f};
+        glm::mat4 projection{1.f};
+        glm::mat4 view{1.f};
         glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; // w is intensity
         glm::vec3 lightPosition{-1.f};
         alignas(16) glm::vec4 lightColor{1.f}; //w is light intensity
@@ -70,7 +66,9 @@ namespace pb{
         }
 
         SimpleRenderSystem SimpleRenderSystem{pbDevice, pbRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
-        
+
+        PointLightSystem pointLightSystem{pbDevice, pbRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+
         PbCamera camera{};
         camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
         
@@ -110,7 +108,8 @@ namespace pb{
 
                 // update
                 GlobalUbo ubo{};      
-                ubo.projectionView = camera.getProjection() * camera.getView();
+                ubo.projection = camera.getProjection();
+                ubo.view = camera.getView();
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
 
@@ -121,6 +120,7 @@ namespace pb{
                 // render
                 pbRenderer.beginSwapChainRenderPass(commandBuffer);
                 SimpleRenderSystem.renderGameObjects(frameInfo);
+                pointLightSystem.render(frameInfo);
                 pbRenderer.endSwapChainRenderPass(commandBuffer);
                 pbRenderer.endFrame();
             }
