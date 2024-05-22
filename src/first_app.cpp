@@ -3,8 +3,8 @@
 #include "keyboard_movement_controller.hpp"
 #include "pb_buffer.h"
 #include "pb_camera.h"
-#include "simple_render_system.h"
-#include "point_light_system.h"
+#include "systems/simple_render_system.h"
+#include "systems/point_light_system.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -23,7 +23,7 @@ namespace pb{
         glm::mat4 view{1.f};
         glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; // w is intensity
         glm::vec3 lightPosition{-1.f};
-        alignas(16) glm::vec4 lightColor{1.f}; //w is light intensity
+        alignas(16) glm::vec4 lightColor{1.f, .0f, .0f, 1.f}; //w is light intensity
     };
     
     FirstApp::FirstApp(){

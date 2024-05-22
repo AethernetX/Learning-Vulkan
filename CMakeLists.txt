@@ -36,7 +36,7 @@ endif()
 
 include_directories(external)
 
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -47,7 +47,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CM
 target_include_directories(${PROJECT_NAME} PUBLIC ${MINGW_PATH}/include)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
- /src
+ ${PROJECT_SOURCE_DIR}/src
  ${Vulkan_INCLUDE_DIRS}
  ${GLFW_INCLUDE_DIRS}
  ${GLM_PATH}
