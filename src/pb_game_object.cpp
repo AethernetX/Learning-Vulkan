@@ -57,4 +57,13 @@ namespace pb {
             },
         };
     }
+    
+    PbGameObject PbGameObject::makePointLight(float intensity, float radius, glm::vec3 color){
+        PbGameObject gameObj = PbGameObject::createGameObject();
+        gameObj.color = color;
+        gameObj.transform.scale.x = radius;
+        gameObj.pointLight = std::make_unique<PointLightComponent>();
+        gameObj.pointLight->lightIntensity = intensity;
+        return gameObj;
+    }
 }

@@ -27,10 +27,10 @@ namespace pb{
 
     void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout){
 
-        VkPushConstantRange pushConstantRange{
+        VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
         pushConstantRange.offset = 0,
-        pushConstantRange.size = sizeof(SimplePushConstantData)};
+        pushConstantRange.size = sizeof(SimplePushConstantData);
 
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 

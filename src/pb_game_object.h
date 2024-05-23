@@ -22,6 +22,10 @@ namespace pb{
         glm::mat3 normalMatrix();
     };
 
+    struct PointLightComponent {
+        float lightIntensity = 1.0f;
+    };
+
     class PbGameObject {
         public:
         using id_t = unsigned int;
@@ -32,6 +36,8 @@ namespace pb{
             return PbGameObject{currentId++};
         }
 
+        static PbGameObject makePointLight(float intensity = 1.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+
         PbGameObject(const PbGameObject &) = delete;
         PbGameObject &operator=(const PbGameObject &) = delete;
         PbGameObject(PbGameObject &&) = default;
@@ -39,10 +45,13 @@ namespace pb{
 
         id_t getId() { return id;}
 
-        std::shared_ptr<PbModel> model{};
         glm::vec3 color{};
         TransformComponent transform{};
-            
+
+        // Optional pointer components 
+        std::shared_ptr<PbModel> model{};
+        std::unique_ptr<PointLightComponent> pointLight = nullptr;
+
         private:
         PbGameObject(id_t objID) : id{objID} {}
             
